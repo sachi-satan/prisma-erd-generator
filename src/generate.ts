@@ -364,6 +364,7 @@ export default async (options: GeneratorOptions) => {
         const disabled = Boolean(process.env.DISABLE_ERD);
         const debug =
             config.erdDebug === 'true' || Boolean(process.env.ERD_DEBUG);
+        const puppeteerConfig = config.puppeteerConfig;
 
         if (disabled) {
             return console.log('ERD generator is disabled');
@@ -459,7 +460,12 @@ export default async (options: GeneratorOptions) => {
             }
         }
 
-        const mermaidCommand = `${mermaidCliNodePath} -i ${tempMermaidFile} -o ${output} -t ${theme} -c ${tempConfigFile}`;
+        let mermaidCommand = `${mermaidCliNodePath} -i ${tempMermaidFile} -o ${output} -t ${theme} -c ${tempConfigFile}`;
+
+        if (puppeteerConfig) {
+            mermaidCommand += ` -p ${puppeteerConfig}`;
+        }
+
         if (debug && mermaidCommand)
             console.log('mermaid command: ', mermaidCommand);
         child_process.execSync(mermaidCommand, {
